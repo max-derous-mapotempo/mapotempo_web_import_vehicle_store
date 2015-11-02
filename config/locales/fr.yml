@@ -1,0 +1,4 @@
+fr:
+  vehicle_stores:
+    import_file:
+      many_usage_sets: "Plusieurs configurations de véhicules présentes"
