@@ -1,4 +1,4 @@
-# Copyright © Mapotempo, 2015
+# Copyright © Mapotempo, 2015-2016
 #
 # This file is part of Mapotempo.
 #
@@ -19,32 +19,21 @@
 V01::Stores.class_eval do
   desc 'Import vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
     nickname: 'importVehicleStores',
-    params: V01::Entities::StoresImport.documentation
+    params: V01::Entities::StoresImport.documentation,
+    is_array: true,
+    entity: V01::Entities::Store
   post :import_vehicle_stores do
-    if params[:stores]
-      stores_import = DestinationsImport.new
-      stores_import.assign_attributes(replace: params[:replace])
-      begin
-        ImporterVehicleStores.new(current_customer).import_hash(stores_import.replace, params[:stores])
-      rescue => e
-        error!({error: e.message}, 422)
-      else
-        status 204
-      end
+
+    import = if params[:stores]
+      ImportJson.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], json: params[:stores])
     else
-      stores_import = DestinationsImport.new
-      stores_import.assign_attributes(replace: params[:replace], file: params[:file])
-      if stores_import.valid?
-        begin
-          ImporterVehicleStores.new(current_customer).import_csv(stores_import.replace, stores_import.tempfile, stores_import.name, true)
-        rescue => e
-          error!({error: e.message}, 422)
-        else
-          status 204
-        end
-      else
-        error!({error: stores_import.errors.full_messages}, 422)
-      end
+      ImportCsv.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], file: params[:file])
+    end
+
+    if import && import.valid? && (stores = import.import(true))
+      present stores, with: V01::Entities::Store
+    else
+      error!({error: import.errors.full_messages}, 422)
     end
   end
 end

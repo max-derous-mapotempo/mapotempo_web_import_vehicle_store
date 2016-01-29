@@ -1,4 +1,4 @@
-# Copyright © Mapotempo, 2015
+# Copyright © Mapotempo, 2015-2016
 #
 # This file is part of Mapotempo.
 #
@@ -54,6 +54,8 @@ class ImporterVehicleStores < ImporterStores
     vehicle.vehicle_usages[0].store_start = store
     vehicle.vehicle_usages[0].store_stop = store
     vehicle.save!
+
+    store # For subclasses
   end
 
   def after_import(replace, name, synchronous)

@@ -34,7 +34,9 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
           geocoding_accuracy: nil,
           foo: 'bar'
         }]}
-        assert_equal 204, last_response.status, last_response.body
+        assert last_response.ok?, last_response.body
+        json = JSON.parse(last_response.body)
+        assert_equal 1, json.size
       end
     end
   end
