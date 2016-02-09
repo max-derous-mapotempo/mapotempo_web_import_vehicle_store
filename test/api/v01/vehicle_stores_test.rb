@@ -19,6 +19,8 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
   end
 
   test 'should create bulk from json' do
+    @store.customer.plannings.each(&:destroy)
+    @store.customer.reload
     @store.customer.vehicle_usage_sets[1..-1].each(&:destroy) if @store.customer.vehicle_usage_sets.size > 1
 
     assert_difference('Store.count', 1) do
@@ -34,7 +36,7 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
           geocoding_accuracy: nil,
           foo: 'bar'
         }]}
-        assert last_response.ok?, last_response.body
+        assert last_response.created?, 'Bad response: ' + last_response.body
         json = JSON.parse(last_response.body)
         assert_equal 1, json.size
       end
