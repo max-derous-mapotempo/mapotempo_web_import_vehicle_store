@@ -49,7 +49,8 @@ class ImporterVehicleStores < ImporterStores
   def import_row(name, row, line, options)
     store = super(name, row, line, options)
     store.save!
-    vehicle = @customer.vehicles.build(row.slice(:name, :ref, :emission, :consumption, :capacity, :color, :tomtom_id, :router_id, :masternaut_ref, :speed_multiplicator))
+    vehicle = @customer.vehicles.find(ref: row[:ref]) if row[:ref]
+    vehicle = @customer.vehicles.build(row.slice(:name, :ref, :emission, :consumption, :capacity, :color, :tomtom_id, :router_id, :masternaut_ref, :speed_multiplicator)) if !vehicle
     vehicle.save!
     vehicle.vehicle_usages[0].store_start = store
     vehicle.vehicle_usages[0].store_stop = store
