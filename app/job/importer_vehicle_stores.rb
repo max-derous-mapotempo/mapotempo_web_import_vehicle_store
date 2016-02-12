@@ -32,7 +32,7 @@ class ImporterVehicleStores < ImporterStores
     })
   end
 
-  def before_import(name, synchronous, options)
+  def before_import(name, options)
     if @customer.vehicle_usage_sets.size > 1
       # Assert there is only one vehicle_usage_sets
       raise ImportBaseError.new(I18n.t('vehicle_stores.import_file.many_usage_sets'))
@@ -43,7 +43,7 @@ class ImporterVehicleStores < ImporterStores
       @customer.vehicles.select{ |vehicle| vehicle != @tmp_vehicle }.each(&:destroy)
     end
 
-    super(name, synchronous, options)
+    super(name, options)
   end
 
   def import_row(name, row, line, options)
@@ -59,8 +59,8 @@ class ImporterVehicleStores < ImporterStores
     store # For subclasses
   end
 
-  def after_import(name, synchronous, options)
-    super(name, synchronous, options)
+  def after_import(name, options)
+    super(name, options)
     if options[:replace]
       @customer.vehicles.destroy(@tmp_vehicle)
       @customer.stores.destroy(@tmp_store)
