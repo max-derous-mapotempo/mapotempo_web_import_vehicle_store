@@ -25,7 +25,7 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
 
     assert_difference('Store.count', 1) do
       assert_difference('Vehicle.count', 1) do
-        post api_vehicle_store(), {stores: [{
+        put api_vehicle_store(), {stores: [{
           name: 'Nouveau dépôt',
           street: nil,
           postalcode: nil,
@@ -36,7 +36,7 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
           geocoding_accuracy: nil,
           foo: 'bar'
         }]}
-        assert last_response.created?, 'Bad response: ' + last_response.body
+        assert last_response.ok?, 'Bad response: ' + last_response.body
         json = JSON.parse(last_response.body)
         assert_equal 1, json.size
       end
@@ -46,7 +46,7 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
   test 'should no create bulk from json when many vehicle_usage_sets are present' do
     assert @store.customer.vehicle_usage_sets.size > 1
 
-    post api_vehicle_store(), {stores: [{
+    put api_vehicle_store(), {stores: [{
       name: 'Nouveau dépôt',
       street: nil,
       postalcode: nil,

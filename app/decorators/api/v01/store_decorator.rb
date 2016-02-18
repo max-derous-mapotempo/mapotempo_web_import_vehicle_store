@@ -22,7 +22,7 @@ V01::Stores.class_eval do
     params: V01::Entities::StoresImport.documentation,
     is_array: true,
     entity: V01::Entities::Store
-  post :import_vehicle_stores do
+  put :import_vehicle_stores do
 
     import = if params[:stores]
       ImportJson.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], json: params[:stores])
