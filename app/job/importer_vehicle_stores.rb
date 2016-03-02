@@ -21,14 +21,14 @@ class ImporterVehicleStores < ImporterStores
 
   def columns
     super.merge({
-      emission: I18n.t('vehicle_stores.import_file.emission'),
-      consumption: I18n.t('vehicle_stores.import_file.consumption'),
-      capacity: I18n.t('vehicle_stores.import_file.capacity'),
-      color: I18n.t('vehicle_stores.import_file.color'),
-      tomtom_id: I18n.t('vehicle_stores.import_file.tomtom_id'),
-      router_id: I18n.t('vehicle_stores.import_file.router_id'),
-      masternaut_ref: I18n.t('vehicle_stores.import_file.masternaut_ref'),
-      speed_multiplicator: I18n.t('vehicle_stores.import_file.speed_multiplicator'),
+      emission: {title: I18n.t('vehicle_stores.import_file.emission')},
+      consumption: {title: I18n.t('vehicle_stores.import_file.consumption')},
+      capacity: {title: I18n.t('vehicle_stores.import_file.capacity')},
+      color: {title: I18n.t('vehicle_stores.import_file.color')},
+      tomtom_id: {title: I18n.t('vehicle_stores.import_file.tomtom_id')},
+      router_id: {title: I18n.t('vehicle_stores.import_file.router_id')},
+      masternaut_ref: {title: I18n.t('vehicle_stores.import_file.masternaut_ref')},
+      speed_multiplicator: {title: I18n.t('vehicle_stores.import_file.speed_multiplicator')},
     })
   end
 
