@@ -23,22 +23,25 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
     @store.customer.reload
     @store.customer.vehicle_usage_sets[1..-1].each(&:destroy) if @store.customer.vehicle_usage_sets.size > 1
 
-    assert_difference('Store.count', 1) do
-      assert_difference('Vehicle.count', 1) do
-        put api_vehicle_store(), {stores: [{
-          name: 'Nouveau dépôt',
-          street: nil,
-          postalcode: nil,
-          city: 'Tule',
-          lat: 43.5710885456786,
-          lng: 3.89636993408203,
-          ref: nil,
-          geocoding_accuracy: nil,
-          foo: 'bar'
-        }]}
+    assert_difference('Store.count', 100) do
+      assert_difference('Vehicle.count', 98) do
+        put api_vehicle_store(), {stores: (0..99).collect{ |i|
+          {
+            name: 'Nouveau dépôt',
+            street: nil,
+            postalcode: nil,
+            city: 'Tule',
+            lat: 43.5710885456786,
+            lng: 3.89636993408203,
+            ref: '00' + i.to_s,
+            geocoding_accuracy: nil,
+            foo: 'bar',
+            speed_multiplicator: 0.8
+          }
+        }}
         assert last_response.ok?, 'Bad response: ' + last_response.body
         json = JSON.parse(last_response.body)
-        assert_equal 1, json.size
+        assert_equal 100, json.size
       end
     end
   end

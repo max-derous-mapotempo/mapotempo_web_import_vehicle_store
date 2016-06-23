@@ -1,4 +1,12 @@
 fr:
   vehicle_stores:
     import_file:
+      emission: "émission"
+      consumption: "consommation"
+      capacity: "capacité"
+      tomtom_id: "tomtom"
+      router_id: "calculateur"
+      router_dimension: "dimension"
+      masternaut_ref: "masternaut"
+      speed_multiplicator: "coef vitesse"
       many_usage_sets: "Plusieurs configurations de véhicules présentes"

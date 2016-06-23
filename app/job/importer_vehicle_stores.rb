@@ -19,17 +19,21 @@ require 'importer_stores'
 
 class ImporterVehicleStores < ImporterStores
 
-  def columns
-    super.merge({
+  def columns_vehicle
+    {
       emission: {title: I18n.t('vehicle_stores.import_file.emission')},
       consumption: {title: I18n.t('vehicle_stores.import_file.consumption')},
       capacity: {title: I18n.t('vehicle_stores.import_file.capacity')},
-      color: {title: I18n.t('vehicle_stores.import_file.color')},
       tomtom_id: {title: I18n.t('vehicle_stores.import_file.tomtom_id')},
       router_id: {title: I18n.t('vehicle_stores.import_file.router_id')},
+      router_dimension: {title: I18n.t('vehicle_stores.import_file.router_dimension')},
       masternaut_ref: {title: I18n.t('vehicle_stores.import_file.masternaut_ref')},
       speed_multiplicator: {title: I18n.t('vehicle_stores.import_file.speed_multiplicator')},
-    })
+    }
+  end
+
+  def columns
+    super.merge(columns_vehicle)
   end
 
   def before_import(name, options)
@@ -47,11 +51,11 @@ class ImporterVehicleStores < ImporterStores
   end
 
   def import_row(name, row, line, options)
-    store = super(name, row, line, options)
+    store = super(name, row.clone.delete_if{ |k, v| columns_vehicle.keys.include? k }, line, options)
     store.save!
     vehicle = @customer.vehicles.find_by(ref: row[:ref]) if row[:ref]
-    vehicle = @customer.vehicles.build(row.slice(:name, :ref, :emission, :consumption, :capacity, :color, :tomtom_id, :router_id, :masternaut_ref, :speed_multiplicator)) if !vehicle
-    vehicle.save!
+    vehicle = @customer.vehicles.build if !vehicle
+    vehicle.update! row.slice(*(columns_vehicle.keys + [:name, :ref, :color]))
     vehicle.vehicle_usages[0].store_start = store
     vehicle.vehicle_usages[0].store_stop = store
     vehicle.save!

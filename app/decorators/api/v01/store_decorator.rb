@@ -15,13 +15,14 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
+require_relative 'entities/vehicle_stores_import'
 
 V01::Stores.class_eval do
-  desc 'Import vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
+  desc 'Import synchronously vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
     nickname: 'importVehicleStores',
-    params: V01::Entities::StoresImport.documentation,
+    params: V01::Entities::VehicleStoresImport.documentation,
     is_array: true,
-    entity: V01::Entities::Store
+    entity: V01::Entities::VehicleStore
   put :import_vehicle_stores do
 
     import = if params[:stores]
