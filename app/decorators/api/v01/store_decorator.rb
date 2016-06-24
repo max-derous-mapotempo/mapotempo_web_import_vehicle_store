@@ -15,26 +15,38 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
-require_relative 'entities/vehicle_stores_import'
 
-V01::Stores.class_eval do
-  desc 'Import synchronously vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
-    nickname: 'importVehicleStores',
-    params: V01::Entities::VehicleStoresImport.documentation,
-    is_array: true,
-    entity: V01::Entities::VehicleStore
-  put :import_vehicle_stores do
+def class_exists?(class_name)
+  klass = Module.const_get(class_name)
+  return klass.is_a?(Class)
+rescue NameError
+  return false
+end
 
-    import = if params[:stores]
-      ImportJson.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], json: params[:stores])
-    else
-      ImportCsv.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], file: params[:file])
-    end
+# all are not loaded during delayed_job run_process
+if class_exists?('V01::Stores') && caller.none?{ |l| l =~ /bin\/delayed_job/ }
+  require_relative 'entities/vehicle_stores_import'
 
-    if import && import.valid? && (stores = import.import(true))
-      present stores, with: V01::Entities::Store
-    else
-      error!({error: import.errors.full_messages}, 422)
+  V01::Stores.class_eval do
+    desc 'Import synchronously vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
+      nickname: 'importVehicleStores',
+      params: V01::Entities::VehicleStoresImport.documentation,
+      is_array: true,
+      entity: V01::Entities::VehicleStore
+    put :import_vehicle_stores do
+
+      import = if params[:stores]
+        ImportJson.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], json: params[:stores])
+      else
+        ImportCsv.new(importer: ImporterVehicleStores.new(current_customer), replace: params[:replace], file: params[:file])
+      end
+
+      if import && import.valid? && (stores = import.import(true))
+        present stores, with: V01::Entities::Store
+      else
+        error!({error: import.errors.full_messages}, 422)
+      end
     end
   end
+
 end
