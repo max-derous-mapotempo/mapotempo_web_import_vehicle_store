@@ -23,7 +23,7 @@ class ImporterVehicleStores < ImporterStores
     {
       emission: {title: I18n.t('vehicle_stores.import_file.emission')},
       consumption: {title: I18n.t('vehicle_stores.import_file.consumption')},
-      capacity: {title: I18n.t('vehicle_stores.import_file.capacity')},
+      capacities: {},
       tomtom_id: {title: I18n.t('vehicle_stores.import_file.tomtom_id')},
       router_id: {title: I18n.t('vehicle_stores.import_file.router_id')},
       router_dimension: {title: I18n.t('vehicle_stores.import_file.router_dimension')},
@@ -33,7 +33,10 @@ class ImporterVehicleStores < ImporterStores
   end
 
   def columns
-    super.merge(columns_vehicle)
+    super.merge(columns_vehicle).merge(
+      # Deals with deprecated capacity
+      capacity: {title: I18n.t('vehicle_stores.import_file.capacity'), required: I18n.t('destinations.import_file.format.deprecated')}
+    )
   end
 
   def before_import(name, options)
@@ -51,8 +54,17 @@ class ImporterVehicleStores < ImporterStores
   end
 
   def import_row(name, row, line, options)
+    row[:capacities] = Hash[row[:capacities].map{ |q| [q[:deliverable_unit_id], q[:quantity]] }] if row[:capacities]
+    # Deals with deprecated capacity
+    if !row.key?(:capacities)
+      if row.key?(:capacity) && @customer.deliverable_units.size > 0
+        row[:capacities] = {@customer.deliverable_units[0].id => row.delete(:capacity)}
+      end
+    end
+
     store = super(name, row.clone.delete_if{ |k, v| columns_vehicle.keys.include? k }, line, options)
     store.save!
+
     vehicle = @customer.vehicles.find_by(ref: row[:ref]) if row[:ref]
     vehicle = @customer.vehicles.build if !vehicle
     vehicle.update! row.slice(*(columns_vehicle.keys + [:name, :ref, :color]))

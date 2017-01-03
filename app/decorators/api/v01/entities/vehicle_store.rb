@@ -22,9 +22,22 @@ class V01::Entities::VehicleStore < V01::Entities::Store
 
   expose(:emission, documentation: { type: Integer })
   expose(:consumption, documentation: { type: Integer })
-  expose(:capacity, documentation: { type: Integer })
   expose(:fuel_type, documentation: { type: String })
-  expose(:capacity_unit, documentation: { type: String })
+  expose(:capacity, documentation: { type: Integer, desc: 'Deprecated, use capacities instead.' }) { |m|
+    if m.capacities && m.customer.deliverable_units.size == 1
+      capacities = m.capacities.values
+      capacities[0] if capacities.size == 1
+    end
+  }
+  expose(:capacity_unit, documentation: { type: String, desc: 'Deprecated, use capacities and deliverable_unit entity instead.' }) { |m|
+    if m.capacities && m.customer.deliverable_units.size == 1
+      deliverable_unit_ids = m.capacities.keys
+      m.customer.deliverable_units[0].label if deliverable_unit_ids.size == 1
+    end
+  }
+  expose(:capacities, using: V01::Entities::DeliverableUnitQuantity, documentation: { type: V01::Entities::DeliverableUnitQuantity, is_array: true, param_type: 'form' }) { |m|
+    m.capacities ? m.capacities.to_a.collect{ |a| {deliverable_unit_id: a[0], quantity: a[1]} } : []
+  }
   expose(:router_id, documentation: { type: Integer })
   expose(:router_dimension, documentation: { type: String, values: ::Router::DIMENSION.keys })
   expose(:speed_multiplicator, documentation: { type: Float })

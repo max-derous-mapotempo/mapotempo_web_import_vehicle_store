@@ -36,12 +36,17 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
             ref: '00' + i.to_s,
             geocoding_accuracy: nil,
             foo: 'bar',
-            speed_multiplicator: 0.8
+            speed_multiplicator: 0.8,
+            capacities: [{deliverable_unit_id: deliverable_units(:deliverable_unit_one_one).id, quantity: 10}]
           }
         }}
         assert last_response.ok?, 'Bad response: ' + last_response.body
         json = JSON.parse(last_response.body)
         assert_equal 100, json.size
+
+        @store.customer.reload
+        assert_equal 0.8, @store.customer.vehicles[0].speed_multiplicator
+        assert_equal 10, @store.customer.vehicles[0].capacities.values[0]
       end
     end
   end
