@@ -45,7 +45,7 @@ class V01::VehicleStoresTest < ActiveSupport::TestCase
         assert_equal 100, json.size
 
         @store.customer.reload
-        assert_equal 0.8, @store.customer.vehicles[0].speed_multiplicator
+        assert_equal 0.8, @store.customer.vehicles[0].speed_multiplier
         assert_equal 10, @store.customer.vehicles[0].capacities.values[0]
       end
     end

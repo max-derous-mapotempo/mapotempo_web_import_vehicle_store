@@ -40,5 +40,6 @@ class V01::Entities::VehicleStore < V01::Entities::Store
   }
   expose(:router_id, documentation: { type: Integer })
   expose(:router_dimension, documentation: { type: String, values: ::Router::DIMENSION.keys })
-  expose(:speed_multiplicator, documentation: { type: Float })
+  expose(:speed_multiplicator, documentation: { type: Float, desc: 'Deprecated, use speed_multiplier instead.' }) { |m| m.speed_multiplier }
+  expose(:speed_multiplier, documentation: { type: Float })
 end

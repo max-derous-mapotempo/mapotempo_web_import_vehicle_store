@@ -8,5 +8,6 @@ en:
       router_id: "router"
       router_dimension: "dimension"
       masternaut_ref: "masternaut"
-      speed_multiplicator: "speed multiplier"
+      speed_multiplicator: "speed multiplicator"
+      speed_multiplier: "speed multiplier"
       many_usage_sets: "Many vehicle configurations presente"

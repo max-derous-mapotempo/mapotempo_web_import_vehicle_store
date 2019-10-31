@@ -28,14 +28,16 @@ class ImporterVehicleStores < ImporterStores
       router_id: {title: I18n.t('vehicle_stores.import_file.router_id')},
       router_dimension: {title: I18n.t('vehicle_stores.import_file.router_dimension')},
       masternaut_ref: {title: I18n.t('vehicle_stores.import_file.masternaut_ref')},
-      speed_multiplicator: {title: I18n.t('vehicle_stores.import_file.speed_multiplicator')},
+      speed_multiplier: {title: I18n.t('vehicle_stores.import_file.speed_multiplier')},
     }
   end
 
   def columns
     super.merge(columns_vehicle).merge(
       # Deals with deprecated capacity
-      capacity: {title: I18n.t('vehicle_stores.import_file.capacity'), required: I18n.t('destinations.import_file.format.deprecated')}
+      capacity: {title: I18n.t('vehicle_stores.import_file.capacity'), required: I18n.t('destinations.import_file.format.deprecated')},
+      # Deals with deprecated speed_multiplicator
+      speed_multiplicator: {title: I18n.t('vehicle_stores.import_file.speed_multiplicator'), required: I18n.t('destinations.import_file.format.deprecated')},
     )
   end
 
@@ -61,6 +63,8 @@ class ImporterVehicleStores < ImporterStores
         row[:capacities] = {@customer.deliverable_units[0].id => row.delete(:capacity)}
       end
     end
+    # Deals with deprecated speed_multiplicator
+    row[:speed_multiplier] = row.delete(:speed_multiplicator) if row.key?(:speed_multiplicator) && !row.key?(:speed_multiplier)
 
     store = super(name, row.clone.delete_if{ |k, v| columns_vehicle.keys.include? k }, options)
     store.save!
