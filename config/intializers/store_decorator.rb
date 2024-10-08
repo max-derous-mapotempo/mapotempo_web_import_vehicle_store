@@ -25,7 +25,7 @@ end
 
 # all are not loaded during delayed_job run_process
 if class_exists?('V01::Stores') && caller.none?{ |l| l =~ /bin\/delayed_job/ }
-  require_relative 'entities/vehicle_stores_import'
+  require_relative '../../app/api/v01/entities/vehicle_stores_import'
 
   V01::Stores.class_eval do
     desc 'Import synchronously vehicle, vehicle_usage and store (with only one vehicle_usage_set present) by upload a CSV file or by JSON.',
